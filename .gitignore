@@ -36,7 +36,9 @@
 /workspace.xml
 # Rider ignored files
 */.idea/contentModel.xml
-*/.idea/projectSettingsUpdater.xml
+/projectSettingsUpdater.xml
+/.idea/.idea.learn-opengl/.idea/workspace.xml
+/.idea/.idea.learn-opengl/.idea/projectSettingsUpdater.xml
 /modules.xml
 /.idea.learn-opengl.iml
 # Editor-based HTTP Client requests
@@ -44,6 +46,9 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+
+# rider
+.idea/
 
 # VS Gitignore
 ## Ignore Visual Studio temporary files, build results, and
