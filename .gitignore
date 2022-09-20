@@ -35,8 +35,8 @@
 /shelf/
 /workspace.xml
 # Rider ignored files
-/contentModel.xml
-/projectSettingsUpdater.xml
+*/.idea/contentModel.xml
+*/.idea/projectSettingsUpdater.xml
 /modules.xml
 /.idea.learn-opengl.iml
 # Editor-based HTTP Client requests
