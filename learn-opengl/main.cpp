@@ -26,7 +26,7 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	GLFWwindow* window = glfwCreateWindow(800, 600, "opengl lern", NULL, NULL);
-	if (window == NULL) {
+	if (window == nullptr) {
 		std::cout << "no window here :((" << std::endl;
 		glfwTerminate();
 		return -1;
@@ -62,15 +62,15 @@ int main() {
 	glEnableVertexAttribArray(0);
 
 	// Initialising & compiling vertex shader
-	unsigned int vertexShader;
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
 	glCompileShader(vertexShader);
 	int success;
-	char infoLog[512];
+	
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 	if(!success)
 	{
+		char infoLog[512];
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
