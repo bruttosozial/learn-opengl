@@ -135,9 +135,16 @@
     <ClCompile Include="..\..\..\..\Tools\cpp-libs-includes\OpenGL\glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OpenGLStuff.cpp" />
+    <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OpenGLStuff.h" />
+    <ClInclude Include="Shader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="shader\orange_shader.frag" />
+    <Content Include="shader\position_shader.vert" />
+    <Content Include="shader\yellow_shader.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
