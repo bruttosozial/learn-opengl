@@ -4,6 +4,9 @@
 #include "OpenGLStuff.h"
 #include "Shader.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 int main() {
 	
 	glfwInit();
@@ -33,6 +36,12 @@ int main() {
 		-0.5f, -0.5f,  0.0f, // lower left
 		 0.5f, -0.5f,  0.0f, // lower right
 		 0.0f,  0.5f,  0.0f  // up
+	};
+
+	float verticesTriangleWithColor[] = {
+		-0.5f, -0.5f,  0.0f, 1.0f, 0.0f, 0.0f, // lower left , red
+		 0.5f, -0.5f,  0.0f, 0.0f, 1.0f, 0.0f, // lower right, green
+		 0.0f,  0.5f,  0.0f, 0.0f, 0.0f, 1.0f  // up, blue
 	};
 	
 	float twoTrianglesVertices[] = {
@@ -67,8 +76,10 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
 
 	// insert triangle into Vertex Buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesTriangle), verticesTriangle, GL_STATIC_DRAW);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(verticesTriangle), verticesTriangle, GL_STATIC_DRAW);
 
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesTriangleWithColor), verticesTriangleWithColor, GL_STATIC_DRAW);
+	
 	//glBufferData(GL_ARRAY_BUFFER, sizeof(twoTrianglesVertices), twoTrianglesVertices, GL_STATIC_DRAW);
 
 	// draw square using element buffer object
@@ -78,8 +89,12 @@ int main() {
 	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	// glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3* sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6* sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+	
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6* sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	
 
 	float verticesTriangle2[] = {
 		-0.5f, -1.5f,  0.0f,  // 2 - lower left
@@ -101,11 +116,32 @@ int main() {
 	glEnableVertexAttribArray(0);
 	
 	//Shader s = Shader("shader/position_shader.vert", "shader/orange_shader.frag");
-	Shader s = Shader("shader/position_shader.vert", "shader/uniform_color_shader.frag");
+	//Shader s = Shader("shader/position_shader.vert", "shader/uniform_color_shader.frag");
+	Shader s = Shader("shader/position_color_shader.vert", "shader/input_color_shader.frag");
 	Shader s2 = Shader("shader/position_shader.vert", "shader/yellow_shader.frag");
 
 	float time;
 	float redValue;
+
+	// LOAD TEXTURES BABYYYYY
+	int width, height, nr_channels;
+	unsigned char * data = stbi_load("container.jpg", &width, &height, &nr_channels, 0);
+
+	unsigned int texture_id;
+	glGenTextures(1, &texture_id);
+	
+	// set the texture wrapping/filtering options (on the currently bound texture object)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, texture_id);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	stbi_image_free(data);
 	
 	while (!glfwWindowShouldClose(window)) {
 		// input stufffff
@@ -118,7 +154,7 @@ int main() {
 		time = glfwGetTime();
 		redValue = (sin(time) / 2.0f) + 0.5f;
 		const char * t = "ourColor";
-		s.set4f(t, redValue, 0.0f, 0.0f, 1.0f);
+		//s.set4f(t, redValue, 0.0f, 0.0f, 1.0f);
 		glBindVertexArray(vao_id);
 
 		// drawing triangle without element buffer object

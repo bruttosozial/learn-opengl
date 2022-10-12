@@ -142,11 +142,13 @@
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="shader\input_color_shader.frag" />
     <Content Include="shader\orange_shader.frag" />
     <Content Include="shader\position_color_shader.vert" />
     <Content Include="shader\position_shader.vert" />
     <Content Include="shader\uniform_color_shader.frag" />
     <Content Include="shader\yellow_shader.frag" />
+    <Content Include="textures\container.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
