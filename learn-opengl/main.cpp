@@ -1,6 +1,9 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "OpenGLStuff.h"
 #include "Shader.h"
 
@@ -53,11 +56,12 @@ int main() {
 		 0.0f, -0.5f,  0.0f   // 2 - up
 	};
 
+	// vertices with position, color and texCoordinates
 	float squareVertices[] = {
-		-0.5f,  0.5f, 0.0f, // Upper left
-		 0.5f,  0.5f, 0.0f, // upper right
-		-0.5f, -0.5f, 0.0f, // lower left
-		 0.5f, -0.5f, 0.0f  // lower right
+		-0.5f,  0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	0.0f, 2.0f, // Upper left  / blue		/ Upper left 
+		 0.5f,  0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	2.0f, 2.0f, // upper right / red		/ upper right
+		-0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	0.0f, 0.0f, // lower left  / green		/ lower left
+		 0.5f, -0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	2.0f, 0.0f  // lower right / blue		/ lower right
 	};
 
 	unsigned int indices[] = {
@@ -78,22 +82,26 @@ int main() {
 	// insert triangle into Vertex Buffer
 	//glBufferData(GL_ARRAY_BUFFER, sizeof(verticesTriangle), verticesTriangle, GL_STATIC_DRAW);
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesTriangleWithColor), verticesTriangleWithColor, GL_STATIC_DRAW);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(verticesTriangleWithColor), verticesTriangleWithColor, GL_STATIC_DRAW);
 	
 	//glBufferData(GL_ARRAY_BUFFER, sizeof(twoTrianglesVertices), twoTrianglesVertices, GL_STATIC_DRAW);
 
+	
 	// draw square using element buffer object
-	// glBufferData(GL_ARRAY_BUFFER, sizeof(squareVertices), squareVertices, GL_STATIC_DRAW);
-	// unsigned int EBO;
-	// glGenBuffers(1, &EBO);
-	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	// glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(squareVertices), squareVertices, GL_STATIC_DRAW);
+	unsigned int ebo_id;
+	glGenBuffers(1, &ebo_id);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_id);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6* sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8* sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6* sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8* sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8* sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 	
 
 	float verticesTriangle2[] = {
@@ -115,57 +123,130 @@ int main() {
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3* sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	
-	//Shader s = Shader("shader/position_shader.vert", "shader/orange_shader.frag");
-	//Shader s = Shader("shader/position_shader.vert", "shader/uniform_color_shader.frag");
-	Shader s = Shader("shader/position_color_shader.vert", "shader/input_color_shader.frag");
-	Shader s2 = Shader("shader/position_shader.vert", "shader/yellow_shader.frag");
-
-	float time;
-	float redValue;
-
+	
 	// LOAD TEXTURES BABYYYYY
 	int width, height, nr_channels;
-	unsigned char * data = stbi_load("container.jpg", &width, &height, &nr_channels, 0);
+	unsigned char * data = stbi_load("textures/container.jpg", &width, &height, &nr_channels, 0);
 
 	unsigned int texture_id;
 	glGenTextures(1, &texture_id);
-	
-	// set the texture wrapping/filtering options (on the currently bound texture object)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+	glBindTexture(GL_TEXTURE_2D, texture_id);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glBindTexture(GL_TEXTURE_2D, texture_id);
+	
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 	glGenerateMipmap(GL_TEXTURE_2D);
+	
+	//glActiveTexture(GL_TEXTURE0);
+	
 
+	int width2, height2, nr_channels2;
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char * data2 = stbi_load("textures/test.jpg", &width2, &height2, &nr_channels2, 0);
+	unsigned int texture2_id;
+	glGenTextures(1, &texture2_id);
+	glBindTexture(GL_TEXTURE_2D, texture2_id);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width2, height2, 0, GL_RGB, GL_UNSIGNED_BYTE, data2);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	
+	//glActiveTexture(GL_TEXTURE1);
+	
+	
 	stbi_image_free(data);
+	stbi_image_free(data2);
+
+	//Shader s = Shader("shader/position_shader.vert", "shader/orange_shader.frag");
+	//Shader s = Shader("shader/position_shader.vert", "shader/uniform_color_shader.frag");
+	//Shader s = Shader("shader/position_color_shader.vert", "shader/input_color_shader.frag");
+	
+	Shader s = Shader(
+		"shader/position_color_texcoords_shader.vert",
+		"shader/input_color_sampler2D_shader.frag");
+	
+	Shader s2 = Shader("shader/position_shader.vert", "shader/yellow_shader.frag");
+
+	
+	// USE SHADER BEFORE CHANGING / INITIALISING UNIFORMS!!!!!! AAARGHH
+	s.use();
+	const char * a = "texture1";
+	s.setInt(a, 0);
+	const char * b = "texture2";
+	s.setInt(b, 1);
+	
+	float time;
+	float redValue;
+
+	float box_amount = 0.5f;
+	const char * c = "amount";
+
+
+
+	glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+	glm::mat4 trans = glm::mat4(1.0f);
+
+	trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 1.0f));
+	vec = trans * vec;
+
+
 	
 	while (!glfwWindowShouldClose(window)) {
 		// input stufffff
 		OpenGLStuff::processInput(window);
 
+		if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		{
+			box_amount = box_amount - 0.1f;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		{
+			box_amount = box_amount + 0.1f;
+		}
+		
+		if(box_amount < 0.0f) {box_amount = 0.0f;}
+		if(box_amount > 1.0f) {box_amount = 1.0f;}
+		
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture_id);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2_id);
+		
 		s.use();
+
+		s.setFloat(c, box_amount);
 
 		time = glfwGetTime();
 		redValue = (sin(time) / 2.0f) + 0.5f;
 		const char * t = "ourColor";
 		//s.set4f(t, redValue, 0.0f, 0.0f, 1.0f);
+
+		
 		glBindVertexArray(vao_id);
 
 		// drawing triangle without element buffer object
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		//glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		 //s2.use();
 		 //glBindVertexArray(vao_2_id);
 		 //glDrawArrays(GL_TRIANGLES, 0, 3);
 		
 		// drawing square with element buffer object
-		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();

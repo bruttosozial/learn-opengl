@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Workspaces\Tools\cpp-libs-includes\OpenGL\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Workspaces\Tools\cpp-libs-includes\OpenGL\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\..\includes\opengl;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\libs\opengl;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -132,7 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\Tools\cpp-libs-includes\OpenGL\glad.c" />
+    <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OpenGLStuff.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -142,13 +142,17 @@
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="shader\input_color_sampler2D_shader.frag" />
     <Content Include="shader\input_color_shader.frag" />
     <Content Include="shader\orange_shader.frag" />
     <Content Include="shader\position_color_shader.vert" />
+    <Content Include="shader\position_color_texcoords_shader.vert" />
     <Content Include="shader\position_shader.vert" />
     <Content Include="shader\uniform_color_shader.frag" />
     <Content Include="shader\yellow_shader.frag" />
+    <Content Include="textures\awesomeface.png" />
     <Content Include="textures\container.jpg" />
+    <Content Include="textures\test.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
