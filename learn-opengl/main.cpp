@@ -12,7 +12,7 @@
 static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 static void processInput(GLFWwindow* window);
 
-int main() {
+int main2() {
 	
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -28,15 +28,20 @@ int main() {
 
 	glfwMakeContextCurrent(window);
 
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
-	
+
+	// Information for OpenGL to translate internal coordinates to screen coordinates
+	// (Internal OpenGL Coordinates go from -1 to 1)
 	glViewport(0, 0, 800, 600);
+
+	// Everytime the window gets resized, GLFW executes the callback to give the OpenGL context the new information
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+	// The vertices of the first triangle
 	float verticesTriangle[] = {
 		-0.5f, -0.5f,  0.0f, // lower left
 		 0.5f, -0.5f,  0.0f, // lower right
@@ -220,7 +225,7 @@ int main() {
 		if(box_amount < 0.0f) {box_amount = 0.0f;}
 		if(box_amount > 1.0f) {box_amount = 1.0f;}
 		
-		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+		glClearColor(0.38f, 0.38f, 0.38f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glActiveTexture(GL_TEXTURE0);
