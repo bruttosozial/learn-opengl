@@ -4,11 +4,13 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "OpenGLStuff.h"
 #include "Shader.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
+static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+static void processInput(GLFWwindow* window);
 
 int main() {
 	
@@ -33,7 +35,7 @@ int main() {
 	}
 	
 	glViewport(0, 0, 800, 600);
-	glfwSetFramebufferSizeCallback(window, OpenGLStuff::framebuffer_size_callback);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	float verticesTriangle[] = {
 		-0.5f, -0.5f,  0.0f, // lower left
@@ -204,7 +206,7 @@ int main() {
 	
 	while (!glfwWindowShouldClose(window)) {
 		// input stufffff
-		OpenGLStuff::processInput(window);
+		processInput(window);
 
 		if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 		{
@@ -254,4 +256,14 @@ int main() {
 
 	glfwTerminate();
 	return 0;
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+	glViewport(0, 0, width, height);
+}
+
+void processInput(GLFWwindow* window) {
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+		glfwSetWindowShouldClose(window, true);
+	}
 }

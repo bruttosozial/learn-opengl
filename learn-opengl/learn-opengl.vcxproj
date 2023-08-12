@@ -134,11 +134,9 @@
   <ItemGroup>
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="OpenGLStuff.cpp" />
     <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="OpenGLStuff.h" />
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
