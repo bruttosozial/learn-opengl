@@ -66,6 +66,20 @@ int main()
         "shader/position_color_shader.vert",
         "shader/input_color_shader.frag");
 
+    Shader colorUniformShader = Shader(
+        "shader/position_shader.vert",
+        "shader/uniform_color_shader.frag");
+    const char* ourColor = "ourColor";
+
+    Shader offsetUniformShader = Shader(
+        "shader/position_shader_uniformoffset.vert",
+        "shader/input_color_shader.frag");
+    const char* offset = "offset";
+
+    Shader colorLocationShader = Shader(
+        "shader/position_shader_outlocation.vert",
+        "shader/in_color.frag");
+
     unsigned int vaoIdColor;
     glGenVertexArrays(1, &vaoIdColor);
     glBindVertexArray(vaoIdColor);
@@ -179,11 +193,27 @@ int main()
         glUseProgram(shaderProgramId);
         glBindVertexArray(vaoId3);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        */
+        
 
         colorShader.use();
         glBindVertexArray(vaoIdColor);
         glDrawArrays(GL_TRIANGLES, 0, 3);
+        
+
+        colorUniformShader.use();
+        float timeValue = glfwGetTime();
+        float greenValue = sin(timeValue) / 2.0f + 0.5f;
+        colorUniformShader.set4f(ourColor, 0.0f, greenValue, 0.0f, 1.0f);
+        glBindVertexArray(vaoId);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        */
+
+        // offsetUniformShader.use();
+        // offsetUniformShader.setFloat(offset, 0.2f);
+        colorLocationShader.use();
+        glBindVertexArray(vaoId);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        
         
         
         glfwSwapBuffers(window);
