@@ -5,6 +5,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Shader.h"
+#include "Lessons.h"
+#include "stb_image.h"
+
 
 unsigned int initializeShaderProgram(const char* vertexShaderSource, const char* fragmentShaderSource);
 static unsigned int initializeShader(const char* source, int type);
@@ -26,6 +29,7 @@ const char* fragmentShaderSource2 = "#version 330 core\n"
 
 int main()
 {
+    Lessons l = Lessons();
     
     GLFWwindow* window = initializeWindow();
     if(window == nullptr) {return -1;}
@@ -54,14 +58,7 @@ int main()
         0, 1, 3,   // first triangle
         1, 2, 3    // second triangle
     };
-
-    float colorVertices[] = {
-        // positions         // colors
-        0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
-       -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
-        0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
-   };
-
+    
     Shader colorShader = Shader(
         "shader/position_color_shader.vert",
         "shader/input_color_shader.frag");
@@ -80,32 +77,8 @@ int main()
         "shader/position_shader_outlocation.vert",
         "shader/in_color.frag");
 
-    unsigned int vaoIdColor;
-    glGenVertexArrays(1, &vaoIdColor);
-    glBindVertexArray(vaoIdColor);
     
-    unsigned int vboIdColor;
-    glGenBuffers(1, &vboIdColor);
-    glBindBuffer(GL_ARRAY_BUFFER, vboIdColor);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(colorVertices), colorVertices, GL_STATIC_DRAW);
-    
-    glVertexAttribPointer(
-    0, // location of the position attribute, as specified in the shader source
-    3, // pointer has 3 values
-    GL_FLOAT,
-    GL_FALSE,
-    6 * sizeof(float),
-    reinterpret_cast<void*>(0));
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(
-    1, // location of the position attribute, as specified in the shader source
-    3, // pointer has 3 values
-    GL_FLOAT,
-    GL_FALSE,
-    6 * sizeof(float),
-    reinterpret_cast<void*>(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    
+    unsigned int vaoIdColor = l.generateColorVao();
     
     // Create the shader programs
     unsigned int shaderProgramId = initializeShaderProgram(vertexShaderSource, fragmentShaderSource);
@@ -169,6 +142,23 @@ int main()
     3 * sizeof(float),
     reinterpret_cast<void*>(0));
     glEnableVertexAttribArray(0);
+
+    
+    // HELLO TEXTURES CONTAINER TEXTURES
+    int width, height, nrChannels;
+    unsigned char *imgData = stbi_load("textures/container.jpg", &width, &height, &nrChannels, 0);
+
+    unsigned int textureId;
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_2D, textureId);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imgData);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(imgData);
+    
+    unsigned int helloTexturesVAO_ID = l.generateTexture1VAO();
+    Shader helloTextures1Shader = Shader(
+        "shader/position_color_texcoords_shader.vert",
+        "shader/sampler2D.frag");
     
     
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -206,15 +196,20 @@ int main()
         colorUniformShader.set4f(ourColor, 0.0f, greenValue, 0.0f, 1.0f);
         glBindVertexArray(vaoId);
         glDrawArrays(GL_TRIANGLES, 0, 3);
-        */
+        
 
         // offsetUniformShader.use();
         // offsetUniformShader.setFloat(offset, 0.2f);
         colorLocationShader.use();
         glBindVertexArray(vaoId);
         glDrawArrays(GL_TRIANGLES, 0, 3);
+        */
         
-        
+        // Hello Texture 1
+        helloTextures1Shader.use();
+        glBindTexture(GL_TEXTURE_2D, textureId);
+        glBindVertexArray(helloTexturesVAO_ID);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         
         glfwSwapBuffers(window);
         glfwPollEvents();

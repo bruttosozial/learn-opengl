@@ -133,11 +133,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
+    <ClCompile Include="Lessons.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="main2.cpp" />
     <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Lessons.h" />
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
@@ -151,11 +153,13 @@
     <Content Include="shader\position_shader_outlocation.vert" />
     <Content Include="shader\position_shader_uniformoffset.vert" />
     <Content Include="shader\position_shader_upsidedown.vert" />
+    <Content Include="shader\sampler2D.frag" />
     <Content Include="shader\uniform_color_shader.frag" />
     <Content Include="shader\yellow_shader.frag" />
     <Content Include="textures\awesomeface.png" />
     <Content Include="textures\container.jpg" />
     <Content Include="textures\test.jpg" />
+    <Content Include="textures\wall.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
